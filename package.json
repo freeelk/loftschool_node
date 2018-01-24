@@ -4,7 +4,7 @@
   "description": "LoftSchool Большая домашняя работа курса по Node.js - Корпоративная система \"LoftSystem\".",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./serv/app.js",
+    "start": "node ./serv/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
