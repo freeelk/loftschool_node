@@ -96,7 +96,6 @@ module.exports.getUsers = function (req, res, next) {
     ).then(users => {
             users.forEach(user => {
                 user.dataValues.permission = transformPermissions(user.dataValues.permissions);
-                user.dataValues.access_token = "6910b318-c254-4ad6-90a6-0c35dface857"; //test
                 delete user.dataValues.permissions;
             });
 
@@ -117,7 +116,6 @@ module.exports.getUsers = function (req, res, next) {
  */
 module.exports.saveNewUser = function (req, res, next) {
     const bodyObj = JSON.parse(req.body);
-    console.log('USER CREATE', 'PASSWORD:', `>>${bodyObj.password}<<`);
     bodyObj.password = createHash(bodyObj.password);
     const permissions = bodyObj.permission;
     delete bodyObj.permissions;
@@ -174,7 +172,6 @@ module.exports.updateUser = function (req, res, next) {
         if (user) {
             user.updateAttributes(bodyObj).then(updatedUser=>{
                 updatedUser.dataValues.permission = transformPermissions(user.dataValues.permissions);
-                updatedUser.dataValues.access_token = "6910b318-c254-4ad6-90a6-0c35dface857"; //test
                 delete updatedUser.dataValues.permissions;
                 return res.json(updatedUser.dataValues);
             })
