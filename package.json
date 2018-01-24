@@ -1,0 +1,32 @@
+{
+  "name": "loftschool_node",
+  "version": "1.0.0",
+  "description": "LoftSchool Большая домашняя работа курса по Node.js - Корпоративная система \"LoftSystem\".",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexSyrtsov/loftschool_node.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexSyrtsov/loftschool_node/issues"
+  },
+  "homepage": "https://github.com/AlexSyrtsov/loftschool_node#readme",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.2",
+    "formidable": "^1.1.1",
+    "pg": "^7.4.1",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.30.2",
+    "socket.io": "^2.0.4",
+    "uuidv4": "^0.5.0"
+  }
+}
