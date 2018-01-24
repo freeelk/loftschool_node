@@ -4,14 +4,26 @@ const Sequelize = require("sequelize");
 const databaseConfig = require('./database-config.json');
 
 
-
 var sequelize;
 
 function getSequelize() {
     if (sequelize) {
         return sequelize;
     } else {
-        sequelize = new Sequelize(databaseConfig.dataBase, databaseConfig.user, databaseConfig.password, databaseConfig.params);
+
+        if (process.env.DATABASE_URL) {
+            sequelize = new Sequelize(process.env.DATABASE_URL, {
+                dialect:  'postgres',
+                protocol: 'postgres',
+                port:     match[4],
+                host:     match[3],
+                logging:  true
+            })
+        } else {
+            sequelize = new Sequelize(databaseConfig.dataBase, databaseConfig.user, databaseConfig.password, databaseConfig.params);
+        }
+
+
         sequelize.authenticate().then(() => {
                 console.log('Соединение установлено.');
             })
