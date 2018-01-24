@@ -28,6 +28,7 @@
     "pg-hstore": "^2.3.2",
     "sequelize": "^4.30.2",
     "socket.io": "^2.0.4",
-    "uuidv4": "^0.5.0"
+    "uuidv4": "^0.5.0",
+    "cloudinary": ""
   }
 }
