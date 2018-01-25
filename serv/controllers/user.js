@@ -227,7 +227,7 @@ module.exports.saveUserImage = function (req, res, next) {
     const readStream = fs.createReadStream(filePath);
     readStream.setEncoding('binary');
 
-    readStream.on('data', uploadToCloudStream.write).on('end', uploadToCloudStream.end);
+    readStream.pipe(uploadToCloudStream);
 
 /*    readStream.on('data', (chunk) => {
       console.log(`Received ${chunk.length} bytes of data.`);
