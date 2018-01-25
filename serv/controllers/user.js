@@ -201,8 +201,20 @@ module.exports.deleteUser = function (req, res, next) {
  * @param next
  */
 module.exports.saveUserImage = function (req, res, next) {
+  const cloudinary = require('cloudinary');
+
+  const stream = cloudinary.uploader.upload_stream(result => {
+    console.log(result);
+
+    return res.json({path: result.url});
+
+  }, { public_id: 'test.jpg' } );
+
+  fs.createReadStream(req.files.image.path, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
+
+
   //if (process.env.CLOUDINARY_URL) {
-    saveImageHeroku(res);
+    //saveImageHeroku(res);
   /*} else {
 
     const form = new formidable.IncomingForm();
