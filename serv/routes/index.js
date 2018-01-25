@@ -19,6 +19,6 @@ router.post('/api/newNews', ctrlNews.newNews);
 router.put('/api/updateNews/:id', ctrlNews.updateNews);
 router.delete('/api/deleteNews/:id', ctrlNews.deleteNews);
 
-router.get('*', function (req, res, next) {res.sendFile(path.join(__dirname, '../../dist/index.html'));});
+router.get('*', function (req, res, next) { res.sendFile(path.join(__dirname, '../../dist/index.html')); });
 
 module.exports = router;

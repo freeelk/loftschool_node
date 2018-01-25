@@ -202,7 +202,6 @@ module.exports.deleteUser = function (req, res, next) {
  * @param next
  */
 module.exports.saveUserImage = function (req, res, next) {
-
   const form = new formidable.IncomingForm();
 
   form.parse(req, (err, fields, files) => {
@@ -213,92 +212,26 @@ module.exports.saveUserImage = function (req, res, next) {
     const filePath = files[req.params.id].path;
 
     if (process.env.CLOUDINARY_URL) {
-
+      // Запущено на heroku. Используем трансформацию изображения
       const stream = cloudinary.v2.uploader.upload_stream(function (error, result) {
-        const url = cloudinary.v2.url(`${result.public_id}.${result.format}`, {
-          gravity: "face",
-          height: 200,
-          width: 200,
-          crop: "thumb"
-        });
-        return res.json({path: url});
-      });
-      const file_reader = fs.createReadStream(filePath).pipe(stream);
-
-    } else {
-
-      const form = new formidable.IncomingForm();
-      const uploadDir = 'images/users';
-
-      form.parse(req, (err, fields, files) => {
         if (err) {
           return next(err);
         }
 
-        const savedFilePath = path.join('dist', uploadDir, files[req.params.id].name);
-        fs.rename(files[req.params.id].path, savedFilePath, (err) => {
-          if (err) {
-            fs.unlink(savedFilePath);
-            return next(err);
-          }
-
-          return res.json({path: path.join(uploadDir, files[req.params.id].name)});
+        const url = cloudinary.v2.url(`${result.public_id}.${result.format}`, {
+          gravity: 'face',
+          height: 200,
+          width: 200,
+          crop: 'thumb'
         });
+        return res.json({path: url});
       });
-
-    }
-
-
-    //readStream.pipe(uploadToCloudStream);
-
-/*    readStream.on('data', (chunk) => {
-      console.log(`Received ${chunk.length} bytes of data.`);
-    });*/
-
-    /*readStream.on('end', () => {
-      //uploadToCloudStream.end();
-      console.log('--  was ended');
-    });*/
-
-    //var file_reader = fs.createReadStream(filePath, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
-
-    /*cloudinary.uploader.upload(filePath,
-        function (result) {
-          console.log(result)
-          return res.json({path: result.url});
-        });*/
-
-    //var stream = cloudinary.uploader.upload_stream(function(result) { console.log(result); });
-    //var file_reader = fs.createReadStream(filePath, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
-
-    /*stream = cloudinary.uploader.upload_stream(result => {
-      console.log('RESULT:' + result);
-
-      return res.json({path: result.url});
-
-    }, { public_id: files[req.params.id].name } );
-
-    fs.createReadStream(filePath, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);*/
-
-  });
-
-
-
-
-  //if (process.env.CLOUDINARY_URL) {
-    //saveImageHeroku(res);
-  /*} else {
-
-    const form = new formidable.IncomingForm();
-    const uploadDir = 'images/users';
-
-    form.parse(req, (err, fields, files) => {
-      if (err) {
-        return next(err);
-      }
-
+      fs.createReadStream(filePath).pipe(stream);
+    } else {
+      // Запущено на локальном сервере
+      const uploadDir = 'images/users';
       const savedFilePath = path.join('dist', uploadDir, files[req.params.id].name);
-      fs.rename(files[req.params.id].path, savedFilePath, (err) => {
+      fs.rename(filePath, savedFilePath, (err) => {
         if (err) {
           fs.unlink(savedFilePath);
           return next(err);
@@ -306,12 +239,8 @@ module.exports.saveUserImage = function (req, res, next) {
 
         return res.json({path: path.join(uploadDir, files[req.params.id].name)});
       });
-    });
-
-  }*/
-
-
-
+    }
+  });
 };
 
 /**
@@ -390,37 +319,3 @@ function compareHash (password, hash) {
   if (!password || !hash) return false;
   return bcrypt.compareSync(password, hash.trim());
 }
-
-function saveImageHeroku(res){
-    const cloudinary = require('cloudinary');
-
-    const stream = cloudinary.uploader.upload_stream(result => {
-      console.log(result);
-
-      return res.json({path: result.url});
-
-    }, { public_id: result.public_id } );
-
-    fs.createReadStream(req.files.image.path, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
-}
-
-/*function saveImageLocal(req) {
-  const form = new formidable.IncomingForm();
-  const uploadDir = 'images/users';
-
-  form.parse(req, (err, fields, files) => {
-    if (err) {
-      return next(err);
-    }
-
-    const savedFilePath = path.join('dist', uploadDir, files[req.params.id].name);
-    fs.rename(files[req.params.id].path, savedFilePath, (err) => {
-      if (err) {
-        fs.unlink(savedFilePath);
-        return next(err);
-      }
-
-      return res.json({path: path.join(uploadDir, files[req.params.id].name)});
-    });
-  });
-}*/
