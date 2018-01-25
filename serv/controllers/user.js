@@ -221,7 +221,7 @@ module.exports.saveUserImage = function (req, res, next) {
 
     fs.createReadStream(filePath, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
 
-  }
+  });
 
 
 
