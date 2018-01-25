@@ -219,15 +219,21 @@ module.exports.saveUserImage = function (req, res, next) {
       return res.json({path: result.url});
     });*/
 
-    const uploadToCloudStream = cloudinary.uploader.upload_stream(function(result) {
+    /*const uploadToCloudStream = cloudinary.uploader.upload_stream(function(result) {
       console.log('RESULT:' , result);
       return res.json({path: result.url});
     });
 
     const readStream = fs.createReadStream(filePath);
-    readStream.setEncoding('binary');
+    readStream.setEncoding('binary');*/
 
-    readStream.pipe(uploadToCloudStream);
+    var stream = cloudinary.v2.uploader.upload_stream(function(error, result){
+      console.log(result);
+      return res.json({path: result.url});
+    });
+    var file_reader = fs.createReadStream(filePath).pipe(stream);
+
+    //readStream.pipe(uploadToCloudStream);
 
 /*    readStream.on('data', (chunk) => {
       console.log(`Received ${chunk.length} bytes of data.`);
