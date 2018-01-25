@@ -201,9 +201,9 @@ module.exports.deleteUser = function (req, res, next) {
  * @param next
  */
 module.exports.saveUserImage = function (req, res, next) {
-  if (process.env.CLOUDINARY_URL) {
+  //if (process.env.CLOUDINARY_URL) {
     saveImageHeroku(res);
-  } else {
+  /*} else {
 
     const form = new formidable.IncomingForm();
     const uploadDir = 'images/users';
@@ -224,7 +224,7 @@ module.exports.saveUserImage = function (req, res, next) {
       });
     });
 
-  }
+  }*/
 
 
 
