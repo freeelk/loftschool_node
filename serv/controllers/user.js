@@ -23,7 +23,6 @@ module.exports.login = function (req, res, next) {
     ]
   }).then(user => {
     if (user) {
-      console.log('USER YES', bodyObj.password, user.dataValues.password);
       if (compareHash(bodyObj.password, user.dataValues.password)) {
         user.dataValues.permission = transformPermissions(user.dataValues.permissions);
         delete user.dataValues.permissions;
@@ -102,7 +101,7 @@ module.exports.getUsers = function (req, res, next) {
     return res.json(users);
   },
   error => {
-    console.log(error);
+    return next(error);
   }
   );
 };
@@ -125,11 +124,7 @@ module.exports.saveNewUser = function (req, res, next) {
     bodyObj.access_token = uuidv4();
 
     sequelize.models.users.create(bodyObj).then((user) => {
-      console.log('user created');
-
       Promise.all(savePermissions(bodyObj.permissionId, permissions)).then((data) => {
-        console.log('permissions created');
-
         sequelize.models.users.find({
           where: {username: bodyObj.username},
           include: [
@@ -139,13 +134,12 @@ module.exports.saveNewUser = function (req, res, next) {
           if (user) {
             user.dataValues.permission = transformPermissions(user.dataValues.permissions);
             delete user.dataValues.permissions;
-            console.log('response', user.dataValues);
             return res.json(user.dataValues);
           }
         });
       },
       error => {
-        console.log(error);
+        return next(error);
       });
     });
   });
@@ -161,6 +155,12 @@ module.exports.saveNewUser = function (req, res, next) {
 module.exports.updateUser = function (req, res, next) {
   const bodyObj = JSON.parse(req.body);
 
+  console.log('BODY OBJ:', bodyObj);
+
+  if (bodyObj.password) {
+    bodyObj.password = createHash(bodyObj.password);
+  }
+
   sequelize.models.users.find({
     where: {id: bodyObj.id},
     include: [
@@ -168,6 +168,10 @@ module.exports.updateUser = function (req, res, next) {
     ]
   }).then(user => {
     if (user) {
+      if (bodyObj.password && !compareHash(bodyObj.oldPassword, user.password)) {
+        return next(Error('Старый пароль введен не верно'));
+      }
+
       user.updateAttributes(bodyObj).then(updatedUser => {
         updatedUser.dataValues.permission = transformPermissions(user.dataValues.permissions);
         delete updatedUser.dataValues.permissions;
@@ -213,7 +217,7 @@ module.exports.saveUserImage = function (req, res, next) {
 
     if (process.env.CLOUDINARY_URL) {
       // Запущено на heroku. Используем трансформацию изображения
-      const stream = cloudinary.v2.uploader.upload_stream(function (error, result) {
+      const stream = cloudinary.v2.uploader.upload_stream((err, result) => {
         if (err) {
           return next(err);
         }
@@ -281,7 +285,6 @@ function transformPermissions (permissions) {
 
     result[data.type.trim()] = data;
     delete data.type;
-    console.log(item.dataValues);
   });
 
   return result;

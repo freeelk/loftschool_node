@@ -32,9 +32,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  /*   Permissions.associate = function (models) {
-        Permissions.belongsTo(models.users, {foreignKey: 'permissionId', sourceKey: 'id'});
-    }; */
-
   return Permissions;
 };

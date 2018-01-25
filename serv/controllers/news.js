@@ -8,7 +8,7 @@ const sequelize = require('./../db-connection');
  * @param next
  */
 module.exports.getNews = function (req, res, next) {
-  sendAllNews(res);
+  sendAllNews(res, next);
 };
 
 /**
@@ -21,7 +21,7 @@ module.exports.getNews = function (req, res, next) {
 module.exports.newNews = function (req, res, next) {
   const bodyObj = JSON.parse(req.body);
   sequelize.models.news.create(bodyObj).then((news) => {
-    sendAllNews(res);
+    sendAllNews(res, next);
   });
 };
 
@@ -37,7 +37,7 @@ module.exports.updateNews = function (req, res, next) {
 
   sequelize.models.news.findById(req.params.id).then(news => {
     news.updateAttributes(bodyObj).then((news) => {
-      sendAllNews(res);
+      sendAllNews(res, next);
     });
   });
 };
@@ -53,7 +53,7 @@ module.exports.deleteNews = function (req, res, next) {
   sequelize.models.news.destroy({
     where: {id: req.params.id}
   }).then(() => {
-    sendAllNews(res);
+    sendAllNews(res, next);
   });
 };
 
@@ -62,7 +62,7 @@ module.exports.deleteNews = function (req, res, next) {
  *
  * @param res
  */
-function sendAllNews (res) {
+function sendAllNews (res, next) {
   sequelize.models.news.findAll(
     {
       include: [
@@ -73,7 +73,7 @@ function sendAllNews (res) {
     return res.json(data);
   },
   error => {
-    console.log(error);
+    return next(error);
   }
   );
 }
