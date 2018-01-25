@@ -4,6 +4,7 @@ const sequelize = require('./../db-connection');
 const formidable = require('formidable');
 const bcrypt = require('bcryptjs');
 const uuidv4 = require('uuidv4');
+const cloudinary = require('cloudinary');
 
 /**
  * авторизация после пользователького ввода. Необходимо вернуть объект авторизовавшегося пользователя.
@@ -201,16 +202,28 @@ module.exports.deleteUser = function (req, res, next) {
  * @param next
  */
 module.exports.saveUserImage = function (req, res, next) {
-  const cloudinary = require('cloudinary');
 
-  const stream = cloudinary.uploader.upload_stream(result => {
-    console.log(result);
+  const form = new formidable.IncomingForm();
 
-    return res.json({path: result.url});
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      return next(err);
+    }
 
-  }, { public_id: 'test.jpg' } );
+    const filePath = files[req.params.id].path;
 
-  //fs.createReadStream(req.files.image.path, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
+    const stream = cloudinary.uploader.upload_stream(result => {
+      console.log(result);
+
+      return res.json({path: result.url});
+
+    }, { public_id: files[req.params.id].name } );
+
+    fs.createReadStream(filePath, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
+
+  }
+
+
 
 
   //if (process.env.CLOUDINARY_URL) {
