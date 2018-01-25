@@ -210,7 +210,7 @@ module.exports.saveUserImage = function (req, res, next) {
 
   }, { public_id: 'test.jpg' } );
 
-  fs.createReadStream(req.files.image.path, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
+  //fs.createReadStream(req.files.image.path, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
 
 
   //if (process.env.CLOUDINARY_URL) {
