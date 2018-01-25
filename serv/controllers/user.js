@@ -211,17 +211,42 @@ module.exports.saveUserImage = function (req, res, next) {
     }
 
     const filePath = files[req.params.id].path;
-    console.log('PATH:' + filePath);
-    console.log('NAME:' + files[req.params.id].name);
 
-    const stream = cloudinary.v2.uploader.upload_stream(function(error, result){
-      console.log(result);
+    if (process.env.CLOUDINARY_URL) {
 
-      const url = cloudinary.v2.url(`${result.public_id}.${result.format}`, {gravity: "face", height: 200, width: 200, crop: "thumb"});
-      return res.json({path: url});
-    });
-    const file_reader = fs.createReadStream(filePath).pipe(stream);
+      const stream = cloudinary.v2.uploader.upload_stream(function (error, result) {
+        const url = cloudinary.v2.url(`${result.public_id}.${result.format}`, {
+          gravity: "face",
+          height: 200,
+          width: 200,
+          crop: "thumb"
+        });
+        return res.json({path: url});
+      });
+      const file_reader = fs.createReadStream(filePath).pipe(stream);
 
+    } else {
+
+      const form = new formidable.IncomingForm();
+      const uploadDir = 'images/users';
+
+      form.parse(req, (err, fields, files) => {
+        if (err) {
+          return next(err);
+        }
+
+        const savedFilePath = path.join('dist', uploadDir, files[req.params.id].name);
+        fs.rename(files[req.params.id].path, savedFilePath, (err) => {
+          if (err) {
+            fs.unlink(savedFilePath);
+            return next(err);
+          }
+
+          return res.json({path: path.join(uploadDir, files[req.params.id].name)});
+        });
+      });
+
+    }
 
 
     //readStream.pipe(uploadToCloudStream);
