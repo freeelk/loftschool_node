@@ -220,7 +220,7 @@ module.exports.saveUserImage = function (req, res, next) {
     });*/
 
     const uploadToCloudStream = cloudinary.uploader.upload_stream(function(result) {
-      console.log(result);
+      console.log('RESULT:' , result);
       return res.json({path: result.url});
     });
 
@@ -234,7 +234,7 @@ module.exports.saveUserImage = function (req, res, next) {
     });*/
 
     readStream.on('end', () => {
-      uploadToCloudStream.end();
+      //uploadToCloudStream.end();
       console.log('--  was ended');
     });
 
