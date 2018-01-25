@@ -211,6 +211,7 @@ module.exports.saveUserImage = function (req, res, next) {
     }
 
     const filePath = files[req.params.id].path;
+    console.log('PATH:' + filePath);
     return res.json({error: 'PATH:' + filePath});
 
     /*const stream = cloudinary.uploader.upload_stream(result => {
