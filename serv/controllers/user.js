@@ -227,16 +227,16 @@ module.exports.saveUserImage = function (req, res, next) {
     const readStream = fs.createReadStream(filePath);
     readStream.setEncoding('binary');
 
-    readStream.pipe(uploadToCloudStream);
+    readStream.on('data', uploadToCloudStream.write).on('end', uploadToCloudStream.end);
 
 /*    readStream.on('data', (chunk) => {
       console.log(`Received ${chunk.length} bytes of data.`);
     });*/
 
-    readStream.on('end', () => {
+    /*readStream.on('end', () => {
       //uploadToCloudStream.end();
       console.log('--  was ended');
-    });
+    });*/
 
     //var file_reader = fs.createReadStream(filePath, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
 
