@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const path = require('path');
 
 const ctrlUser = require('../controllers/user');
 const ctrlNews = require('../controllers/news');
@@ -17,5 +18,7 @@ router.get('/api/getNews', ctrlNews.getNews);
 router.post('/api/newNews', ctrlNews.newNews);
 router.put('/api/updateNews/:id', ctrlNews.updateNews);
 router.delete('/api/deleteNews/:id', ctrlNews.deleteNews);
+
+router.get('*', function (req, res, next) {res.sendFile(path.join(__dirname, '../../dist/index.html'));});
 
 module.exports = router;

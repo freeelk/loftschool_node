@@ -25,8 +25,3 @@ const server = app.listen(process.env.PORT || 3000, function () {
 const io = require('socket.io').listen(server);
 const chat = require('./chat');
 chat(io);
-
-
-var cloudinary = require('cloudinary')
-cloudinary.uploader.upload("dist/images/background.png",
-    function(result) { console.log(result) })

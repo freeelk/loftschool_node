@@ -201,24 +201,33 @@ module.exports.deleteUser = function (req, res, next) {
  * @param next
  */
 module.exports.saveUserImage = function (req, res, next) {
-  const form = new formidable.IncomingForm();
-  const uploadDir = 'images/users';
+  if (process.env.CLOUDINARY_URL) {
+    saveImageHeroku(res);
+  } else {
 
-  form.parse(req, (err, fields, files) => {
-    if (err) {
-      return next(err);
-    }
+    const form = new formidable.IncomingForm();
+    const uploadDir = 'images/users';
 
-    const savedFilePath = path.join('dist', uploadDir, files[req.params.id].name);
-    fs.rename(files[req.params.id].path, savedFilePath, (err) => {
+    form.parse(req, (err, fields, files) => {
       if (err) {
-        fs.unlink(savedFilePath);
         return next(err);
       }
 
-      return res.json({path: path.join(uploadDir, files[req.params.id].name)});
+      const savedFilePath = path.join('dist', uploadDir, files[req.params.id].name);
+      fs.rename(files[req.params.id].path, savedFilePath, (err) => {
+        if (err) {
+          fs.unlink(savedFilePath);
+          return next(err);
+        }
+
+        return res.json({path: path.join(uploadDir, files[req.params.id].name)});
+      });
     });
-  });
+
+  }
+
+
+
 };
 
 /**
@@ -297,3 +306,37 @@ function compareHash (password, hash) {
   if (!password || !hash) return false;
   return bcrypt.compareSync(password, hash.trim());
 }
+
+function saveImageHeroku(res){
+    const cloudinary = require('cloudinary');
+
+    const stream = cloudinary.uploader.upload_stream(result => {
+      console.log(result);
+
+      return res.json({path: result.url});
+
+    }, { public_id: result.public_id } );
+
+    fs.createReadStream(req.files.image.path, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
+}
+
+/*function saveImageLocal(req) {
+  const form = new formidable.IncomingForm();
+  const uploadDir = 'images/users';
+
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      return next(err);
+    }
+
+    const savedFilePath = path.join('dist', uploadDir, files[req.params.id].name);
+    fs.rename(files[req.params.id].path, savedFilePath, (err) => {
+      if (err) {
+        fs.unlink(savedFilePath);
+        return next(err);
+      }
+
+      return res.json({path: path.join(uploadDir, files[req.params.id].name)});
+    });
+  });
+}*/
