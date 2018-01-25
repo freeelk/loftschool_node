@@ -217,7 +217,7 @@ module.exports.saveUserImage = function (req, res, next) {
     const stream = cloudinary.v2.uploader.upload_stream(function(error, result){
       console.log(result);
 
-      const url = cloudinary.v2.url(`${result.public_id}.${result.public_id.format}`, {gravity: "face", height: 200, width: 200, crop: "thumb"});
+      const url = cloudinary.v2.url(`${result.public_id}.${result.format}`, {gravity: "face", height: 200, width: 200, crop: "thumb"});
       return res.json({path: url});
     });
     const file_reader = fs.createReadStream(filePath).pipe(stream);
