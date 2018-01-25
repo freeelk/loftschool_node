@@ -214,11 +214,17 @@ module.exports.saveUserImage = function (req, res, next) {
     console.log('PATH:' + filePath);
     console.log('NAME:' + files[req.params.id].name);
 
-    cloudinary.uploader.upload(filePath,
+    var stream = cloudinary.uploader.upload_stream(function(result) {
+      console.log(result);
+      return res.json({path: result.url});
+    });
+    var file_reader = fs.createReadStream(filePath, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
+
+    /*cloudinary.uploader.upload(filePath,
         function (result) {
           console.log(result)
           return res.json({path: result.url});
-        });
+        });*/
 
     //var stream = cloudinary.uploader.upload_stream(function(result) { console.log(result); });
     //var file_reader = fs.createReadStream(filePath, {encoding: 'binary'}).on('data', stream.write).on('end', stream.end);
